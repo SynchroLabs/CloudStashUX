@@ -1,5 +1,6 @@
 # CloudStash UX
-config.json
+config*.json
+ssl.*
 
 # Logs
 logs
