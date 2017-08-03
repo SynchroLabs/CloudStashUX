@@ -1,1 +1,28 @@
-<h1>{{message}}</h1>
+<ol class = "breadcrumb">
+   <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+   {{#each pathElements}}
+     {{#if this.link}}
+        <li><a href = "{{this.link}}">{{this.name}}</a></li>
+     {{else}}
+        <li class = "active">{{this.name}}</li>
+     {{/if}}
+   {{/each}}
+</ol>
+<table class="table .table-condensed">
+    <tr><th>Entry</th><th>Modified</th><th>Size</th></tr>
+  {{#each entries}}
+    <tr>
+      <td>
+      {{#if this.folder}}
+         <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+         <a href='{{@root.path}}/{{this.name}}'>{{this.name}}</a>
+      {{else}}
+         <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
+         <a href='/download?file={{@root.path}}/{{this.name}}'>{{this.name}}</a>
+      {{/if}}
+      </td>
+      <td><p>{{this.server_modified}}</p></td>
+      <td><p>{{this.size}}</p></td>
+    </tr>
+  {{/each}}
+</table>

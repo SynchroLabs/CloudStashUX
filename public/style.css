@@ -5,3 +5,11 @@ body {
 a {
   color: #00b7ff;
 }
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.breadcrumb {
+    margin-bottom: 0px;
+}

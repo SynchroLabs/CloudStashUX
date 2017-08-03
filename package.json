@@ -23,12 +23,15 @@
     "async": "^2.4.1",
     "bunyan": "^1.8.10",
     "commander": "^2.3.0",
+    "cookie-parser": "^1.4.3",
+    "dropbox": "^2.5.7",
     "express": "~4.14.0",
     "express-handlebars": "^3.0.0",
     "fs-extra": "^1.0.0",
     "handlebars": "^4.0.10",
     "lodash": "^4.17.4",
-    "nconf": "^0.7.1"
+    "nconf": "^0.7.1",
+    "request": "^2.81.0"
   },
   "scripts": {
     "start": "node app.js",
