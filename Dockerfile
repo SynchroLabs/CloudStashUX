@@ -18,7 +18,7 @@ COPY . /usr/src/app
 RUN npm install
 
 # Copy overrides
-copy overrides/get-base-url.js /usr/src/app/node_modules/docker/src
+copy overrides/get-base-url.js /usr/src/app/node_modules/dropbox/src/
 
 # Expose the CLOUDSTASH__PORT set above
 EXPOSE $CLOUDSTASH__PORT 
