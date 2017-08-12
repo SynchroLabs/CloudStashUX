@@ -1,17 +1,33 @@
-<ol class = "breadcrumb">
-   <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-   {{#each pathElements}}
-     {{#if this.link}}
+<div class="breadcrumb" style="padding-left:0px;padding-top:5px;padding-bottom:5px;">
+  <div class="pull-right">
+    <form>
+      <button type="button" class="btn btn-primary btn-sm" onclick="createFolder();"><span class="glyphicon glyphicon-plus"></span> Create Folder</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="bootbox.alert('foo');"><span class="glyphicon glyphicon-upload"></span> Upload File</button>
+    </form>
+  </div>
+  <ol class="breadcrumb" style="height:100%;">
+    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+    {{#each pathElements}}
+      {{#if this.link}}
         <li><a href = "{{this.link}}">{{this.name}}</a></li>
-     {{else}}
+      {{else}}
         <li class = "active">{{this.name}}</li>
-     {{/if}}
-   {{/each}}
-</ol>
-<table class="table .table-condensed">
-    <tr><th>Entry</th><th>Modified</th><th>Size</th></tr>
-  {{#each entries}}
+      {{/if}}
+    {{/each}}
+  </ol>
+</div>
+<table id='filesTable' data-toggle="table" data-sort-name="name" data-sort-order="desc">
+  <thead>
     <tr>
+      <th data-field="state" data-checkbox="true"></th>
+      <th data-field="name" data-sortable="true">Entry</th>
+      <th data-field="date" data-sortable="true">Modified</th>
+      <th data-field="size" data-sortable="true">Size</th></tr>
+  </thead>
+  <tbody>
+  {{#each entries}}
+    <tr data-path="{{@root.path}}/{{this.name}}">
+      <td></td>
       <td>
       {{#if this.folder}}
          <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
@@ -25,4 +41,48 @@
       <td><p>{{this.size}}</p></td>
     </tr>
   {{/each}}
+  </tbody>
 </table>
+<script>
+  var token='{{token}}'
+  var path='{{path}}'
+
+  function selectionChanged () {
+    var selections = $('#filesTable').bootstrapTable('getSelections')
+    console.log("Selection changed, selection count: " + selections.length)
+    selections.forEach(function(element) {
+        console.log("Selection: " + element._data.path)
+    })
+  }
+
+  $('#filesTable').bootstrapTable({
+    onClickRow: function (row, $element, field) {
+      // The idea is that a row click should single select that row (clicking in the state/checkbox
+      // column will multi-select)
+      //
+      console.log("onClickRow:" + JSON.stringify(row))
+      $('#filesTable').bootstrapTable('uncheckAll')
+      $('#filesTable').bootstrapTable('check', $element.attr('data-index'))
+      console.log("Selected item path: " + $element.attr('data-path'))
+    },
+    onClickCell: function (field, value, row, element) {
+      console.log("onClickCell:" + JSON.stringify(field))
+    },
+    onCheck: function (row, element) {
+      console.log("onCheck")
+      selectionChanged()
+    },
+    onUncheck: function (row, element) {
+      console.log("onUncheck")
+      selectionChanged()
+    },
+    onCheckAll: function (row, element) {
+      console.log("onCheckAll")
+      selectionChanged()
+    },
+    onUncheckAll: function (row, element) {
+      console.log("onUncheckAll")
+      selectionChanged()
+    }
+  })
+</script>

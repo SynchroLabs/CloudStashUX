@@ -24,13 +24,32 @@ loggerModule.createMainLogger(config);
 
 var log = loggerModule.getLogger("app");
 
-log.info("CloudStash server v%s loading - %s", pkg.version, config.configDetails);
+log.info("CloudStashUX server v%s loading - %s", pkg.version, config.configDetails);
 
 var server = cloudStashUxServer(config);
 
-server.listen(config.get('PORT'), function () 
+server.listen(config.get('PORT'), function (err) 
 {
-    log.info('CloudStashUX listening on port:', this.address().port);
+    if (err)
+    {
+        log.error("CloudStashUX server failed in listen()", err);
+    }
+    else
+    {
+        log.info('CloudStashUX listening on port:', this.address().port);
+    }
+});
+
+server.on('error', function(err)
+{
+    if (err.code === 'EACCES')
+    {
+        log.error("PORT specified (%d) already in use", config.get('PORT'));
+    }
+    else
+    {
+        log.error("CloudStashUX server error:", err);
+    }
 });
 
 process.on('SIGTERM', function ()
