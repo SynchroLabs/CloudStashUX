@@ -13,3 +13,8 @@ a {
 .breadcrumb {
     margin-bottom: 0px;
 }
+
+.btn-action {
+    width: 200px; 
+    margin: 5px;'
+}
