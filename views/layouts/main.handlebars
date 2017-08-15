@@ -4,27 +4,34 @@
         <meta charset="utf-8" />
         <title>CloudStash UX</title>
 
-        <!-- JQuery -->
+        <!-- JQuery - http://api.jquery.com/ -->
         <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
 
-        <!-- BootStrap -->
+        <!-- BootStrap - https://getbootstrap.com/docs/3.3/ -->
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-        <!-- BootStrap Tables -->
+        <!-- BootStrap Tables - http://bootstrap-table.wenzhixin.net.cn/ -->
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
-        <!-- BootBox -->
+        <!-- BootBox - http://bootboxjs.com/ -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
 
-        <!-- BootStrap Treeview -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
+        <!-- BootStrap Treeview - https://github.com/jonmiles/bootstrap-treeview -->
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
 
-        <!-- Dropbox -->
+        <!-- Bootstrap Notify - http://bootstrap-notify.remabledesigns.com/ -->
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+
+        <!-- js-cookie - https://github.com/js-cookie/js-cookie -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+
+        <!-- Dropbox - http://dropbox.github.io/dropbox-sdk-js/ -->
         <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/2.5.7/Dropbox-sdk.min.js"></script> -->
 
         <!-- Dropbox (pointing at CloudStash -->
@@ -33,7 +40,7 @@
         <link rel="stylesheet" href="/public/style.css">
         <script src="/public/script.js"></script>
     </head>
-    <body>
+    <body onload="onLoad()">
       <nav class="navbar navbar-static-top navbar-inverse">
         <div class="container-fluid">
           <!-- Brand and toggle get grouped for better mobile display -->

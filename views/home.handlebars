@@ -53,7 +53,7 @@
       </thead>
       <tbody>
       {{#each entries}}
-        <tr data-path="{{@root.path}}/{{this.name}}">
+        <tr data-path="{{@root.path}}/{{this.name}}" data-name="{{this.name}}" data-isfolder="{{#if this.folder}}true{{else}}false{{/if}}">
           <td></td>
           <td>
           {{#if this.folder}}
@@ -73,12 +73,12 @@
   </td>
   <td style='padding:20px; vertical-align:top;'>
     <div>
-      <button id="btnCreateFolder" type="button" class="btn btn-primary btn-sm btn-action" onclick="doCreateFolder();"><span class="glyphicon glyphicon-plus"></span> Create Folder</button>
-      <button id="btnUploadFile" type="button" class="btn btn-primary btn-sm btn-action" onclick="doUploadFile();"><span class="glyphicon glyphicon-upload"></span> Upload File</button>
-      <button id="btnRename" type="button" class="btn btn-primary btn-sm btn-action" onclick="doRename();"><span class="glyphicon glyphicon-edit"></span> Rename</button>
-      <button id="btnMove" type="button" class="btn btn-primary btn-sm btn-action" onclick="doMove();"><span class="glyphicon glyphicon-share"></span> Move</button>
-      <button id="btnCopy" type="button" class="btn btn-primary btn-sm btn-action" onclick="doCopy();"><span class="glyphicon glyphicon-duplicate"></span> Copy</button>
-      <button id="btnDelete" type="button" class="btn btn-primary btn-sm btn-action" onclick="doDelete();"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+      <button id="btnCreateFolder" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doCreateFolder();"><span class="glyphicon glyphicon-plus"></span> Create Folder</button>
+      <button id="btnUploadFile" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doUploadFile();"><span class="glyphicon glyphicon-upload"></span> Upload File</button>
+      <button id="btnRename" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doRename();"><span class="glyphicon glyphicon-edit"></span> Rename</button>
+      <button id="btnMove" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doMove();"><span class="glyphicon glyphicon-share"></span> Move</button>
+      <button id="btnCopy" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doCopy();"><span class="glyphicon glyphicon-duplicate"></span> Copy</button>
+      <button id="btnDelete" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="doDelete();"><span class="glyphicon glyphicon-trash"></span> Delete</button>
     </div>
   </td>
 </tr>
