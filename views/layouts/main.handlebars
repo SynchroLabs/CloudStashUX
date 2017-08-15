@@ -1,71 +1,71 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>CloudStash UX</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>CloudStash UX</title>
 
-        <!-- JQuery - http://api.jquery.com/ -->
-        <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+    <!-- JQuery - http://api.jquery.com/ -->
+    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
 
-        <!-- BootStrap - https://getbootstrap.com/docs/3.3/ -->
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- BootStrap - https://getbootstrap.com/docs/3.3/ -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-        <!-- BootStrap Tables - http://bootstrap-table.wenzhixin.net.cn/ -->
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <!-- BootStrap Tables - http://bootstrap-table.wenzhixin.net.cn/ -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
-        <!-- BootBox - http://bootboxjs.com/ -->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
+    <!-- BootBox - http://bootboxjs.com/ -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></script>
 
-        <!-- BootStrap Treeview - https://github.com/jonmiles/bootstrap-treeview -->
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
+    <!-- BootStrap Treeview - https://github.com/jonmiles/bootstrap-treeview -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js"></script>
 
-        <!-- Bootstrap Notify - http://bootstrap-notify.remabledesigns.com/ -->
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+    <!-- Bootstrap Notify - http://bootstrap-notify.remabledesigns.com/ -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
 
-        <!-- js-cookie - https://github.com/js-cookie/js-cookie -->
-        <script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+    <!-- js-cookie - https://github.com/js-cookie/js-cookie -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
 
-        <!-- Dropbox - http://dropbox.github.io/dropbox-sdk-js/ -->
-        <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/2.5.7/Dropbox-sdk.min.js"></script> -->
+    <!-- Dropbox - http://dropbox.github.io/dropbox-sdk-js/ -->
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/2.5.7/Dropbox-sdk.min.js"></script> -->
 
-        <!-- Dropbox (pointing at CloudStash -->
-        <script src="/public/Dropbox-sdk.min.js"></script>
+    <!-- Dropbox (pointing at CloudStash -->
+    <script src="/public/Dropbox-sdk.min.js"></script>
 
-        <link rel="stylesheet" href="/public/style.css">
-        <script src="/public/script.js"></script>
-    </head>
-    <body onload="onLoad()">
-      <nav class="navbar navbar-static-top navbar-inverse">
-        <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">CloudStash UX</a>
-          </div>
-          <!-- Collect the nav links, forms, and other content for toggling -->
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-           <ul class="nav navbar-nav navbar-right">
-            {{#if email}}
-              <li><p class="navbar-text">Signed in as: {{email}}</p></li>
-              <li><a href="logout">Sign out</a></li>
-            {{else}}
-              <li><a href="login">Sign in</a></li>
-            {{/if}}
-            </ul>
-          </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-      </nav>
-        {{{body}}}
-    </body>
+    <link rel="stylesheet" href="/public/style.css">
+    <script src="/public/script.js"></script>
+  </head>
+  <body onload="onLoad()">
+    <nav class="navbar navbar-static-top navbar-inverse">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">CloudStash UX</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+         <ul class="nav navbar-nav navbar-right">
+          {{#if email}}
+            <li><p class="navbar-text">Signed in as: {{email}}</p></li>
+            <li><a href="logout">Sign out</a></li>
+          {{else}}
+            <li><a href="login">Sign in</a></li>
+          {{/if}}
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+      {{{body}}}
+  </body>
 </html>
