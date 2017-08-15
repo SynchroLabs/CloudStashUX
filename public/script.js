@@ -66,14 +66,44 @@ function doUploadFile ()
 
 function doRename () 
 {
-    // !!!
-    bootbox.alert('Rename')
+    var selections = $('#filesTable').bootstrapTable('getSelections')
+    var type = "file"
+    if (selections[0]._data.isfolder) 
+    {
+        type = 'folder'
+    }
+    message = 'Rename ' + type + ': "' + selections[0]._data.name + '" to:'
+
+    bootbox.prompt(message, function (result)
+    {
+        var src = selections[0]._data.path
+        var dst = path + result
+        console.log("Rename " + src + " to " + dst)
+        var dbx = new Dropbox({ accessToken: token })
+        dbx.filesMove({ from_path: src, to_path: dst })
+        .then(function(response) 
+        {
+            console.log('Entry renamed:', response)
+            Cookies.set('notification', 'Renamed ' + type + ': ' + selections[0]._data.name + " to " + result)
+            window.location.reload(true)
+        })
+        .catch(function(error) 
+        {
+            console.error(error)
+        })
+    })
 }
 
 function doMove () 
 {
-    // !!!
-    bootbox.alert('Move')
+    $('#moveCopyModalTitle').text("Move")
+    $('#moveCopyModal').modal()
+
+    $('#moveCopyModalOk').click(function (e) 
+    {
+        console.log("User clicked OK")
+        $('#moveCopyModal').modal('hide')
+    })
 }
 
 function doCopy () 
@@ -98,7 +128,7 @@ function doDelete ()
         {
             type = 'file'
         }
-        message = 'Delete ' + type + ': ' + selections[0]._data.name + '?'
+        message = 'Delete ' + type + ': "' + selections[0]._data.name + '" ?'
     }
 
     bootbox.confirm(message, function (result) 
