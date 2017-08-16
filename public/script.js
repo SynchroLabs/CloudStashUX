@@ -46,54 +46,7 @@ function onLoad ()
         onMoveCopyOk()
     })
 
-    $('#filesTable').bootstrapTable(
-    {
-        onClickRow: function (row, $element, field) 
-        {
-            console.log("onClickRow:" + JSON.stringify(row))
-
-            if (row.state && ($('#filesTable').bootstrapTable('getSelections').length === 1))
-            {
-                // A row click when the row is currently the only selected row should unselect the row
-                //
-                $('#filesTable').bootstrapTable('uncheck', $element.attr('data-index'))
-            }
-            else
-            {
-                // A row click any other time results in that row becoming the only selected row (cancelling any multi-select)
-                //
-                $('#filesTable').bootstrapTable('uncheckAll')
-                $('#filesTable').bootstrapTable('check', $element.attr('data-index'))
-                console.log("Selected item path: " + $element.attr('data-path'))
-            }
-        },
-        onClickCell: function (field, value, row, element)
-        {
-            console.log("onClickCell:" + JSON.stringify(field))
-        },
-        onCheck: function (row, element)
-        {
-            console.log("onCheck")
-            selectionChanged()
-        },
-        onUncheck: function (row, element)
-        {
-            console.log("onUncheck")
-            selectionChanged()
-        },
-        onCheckAll: function (row, element)
-        {
-            console.log("onCheckAll")
-            selectionChanged()
-        },
-        onUncheckAll: function (row, element)
-        {
-            console.log("onUncheckAll")
-            selectionChanged()
-        }
-    })
-
-    $("#filesTable").show();
+    $('#filesTable').show();
 
     // Update initial command state
     //
