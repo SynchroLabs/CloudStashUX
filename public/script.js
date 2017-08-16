@@ -46,6 +46,8 @@ function onLoad ()
         onMoveCopyOk()
     })
 
+    $('#files').on('change', uploadFile)
+
     $('#filesTable').show();
 
     // Update initial command state
@@ -97,7 +99,6 @@ function onCreateFolder ()
     {
         if (result)
         {
-            var dbx = new Dropbox({ accessToken: token })
             notify('Creating folder: ' + result )
             dbx.filesCreateFolder({ path: path + '/' + result }).then(function (response)
             {
@@ -114,8 +115,25 @@ function onCreateFolder ()
 
 function onUploadFile ()
 {
-    // !!!
-    bootbox.alert('Upload File')
+    $('#files').click();
+}
+
+function uploadFile ()
+{
+    var files = $('#files')[0].files
+    console.log("Files: %o", files)
+
+    notify('Uploading file: ' + files[0].name);
+
+    dbx.filesUpload({ path: path + '/' + files[0].name, contents: files[0] }).then(function(response) 
+    {
+        console.log(response);
+        reloadAndNotify('Completed uploading of file: ' + files[0].name)
+    })
+    .catch(function(error) 
+    {
+        console.error(error);
+    });
 }
 
 function onRename () 
@@ -133,7 +151,7 @@ function onRename ()
         var src = selections[0]._data.path
         var dst = path + '/' + result
         console.log('Rename ' + src + ' to ' + dst)
-        var dbx = new Dropbox({ accessToken: token })
+
         dbx.filesMove({ from_path: src, to_path: dst })
         .then(function(response) 
         {
@@ -165,7 +183,6 @@ function onCopy ()
 
 function moveFile (params, successMessage)
 {
-    var dbx = new Dropbox({ accessToken: token })
     dbx.filesMove(params)
     .then(function(response) 
     {
@@ -180,7 +197,6 @@ function moveFile (params, successMessage)
 
 function moveFiles (params)
 {
-    var dbx = new Dropbox({ accessToken: token })
     console.log('Moving entries:', params.entries)
 
     dbx.filesMoveBatch(params).then(function (response) 
@@ -224,7 +240,6 @@ function moveFiles (params)
 
 function copyFile (params, successMessage)
 {
-    var dbx = new Dropbox({ accessToken: token })
     dbx.filesCopy(params)
     .then(function(response) 
     {
@@ -240,7 +255,6 @@ function copyFile (params, successMessage)
 
 function copyFiles (params)
 {
-    var dbx = new Dropbox({ accessToken: token })
     console.log('Copying entries:', params.entries)
 
     dbx.filesCopyBatch(params).then(function (response) 
@@ -284,7 +298,6 @@ function copyFiles (params)
 
 function deleteFile (params, successMessage)
 {
-    var dbx = new Dropbox({ accessToken: token })
     dbx.filesDelete({ path: selections[0]._data.path })
     .then(function(response) 
     {
@@ -299,7 +312,6 @@ function deleteFile (params, successMessage)
 
 function deleteFiles (params)
 {
-    var dbx = new Dropbox({ accessToken: token })
     console.log('Delete entries:', params.entries)
 
     dbx.filesDeleteBatch(params).then(function (response) 
@@ -427,7 +439,6 @@ function onDelete ()
         console.log('Delete confirm result: ' + result)
         if (result) 
         {
-            var dbx = new Dropbox({ accessToken: token })
             if (selections.length === 1) 
             {
                 // Single item operation (interactive)

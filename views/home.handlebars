@@ -74,6 +74,7 @@
   </td>
   <td style="padding:20px; vertical-align:top;">
     <div>
+      <input id="files" type="file" style="display: none;" multiple>
       <button id="btnCreateFolder" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="onCreateFolder();"><span class="glyphicon glyphicon-plus"></span> Create Folder</button>
       <button id="btnUploadFile" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="onUploadFile();"><span class="glyphicon glyphicon-upload"></span> Upload File</button>
       <button id="btnRename" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="onRename();"><span class="glyphicon glyphicon-edit"></span> Rename</button>
@@ -86,8 +87,8 @@
 </table>
 
 <script>
-    var token='{{token}}'
     var path='{{path}}'
+    var dbx = new Dropbox({ accessToken: '{{token}}' })
 
     $('#filesTable').bootstrapTable(
     {
