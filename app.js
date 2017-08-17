@@ -26,6 +26,8 @@ var log = loggerModule.getLogger("app");
 
 log.info("CloudStashUX server v%s loading - %s", pkg.version, config.configDetails);
 
+global.g_dropboxApiEndpoint = config.get('DROPBOX_API_ENDPOINT')
+
 var server = cloudStashUxServer(config);
 
 server.listen(config.get('PORT'), function (err) 

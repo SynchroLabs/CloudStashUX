@@ -1,7 +1,6 @@
 # CloudStash UX
 config*.json
 ssl.*
-public/Dropbox-sdk.min.js
 
 # Logs
 logs

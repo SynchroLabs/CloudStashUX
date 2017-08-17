@@ -35,7 +35,8 @@
   },
   "scripts": {
     "start": "node app.js",
-    "build": "cp overrides/get-base-url.js node_modules/dropbox/src && npm explore dropbox -- npm run build && cp node_modules/dropbox/dist/Dropbox-sdk.min.js public",
+    "build": "cp overrides/get-base-url.js node_modules/dropbox/src",
+    "build-dropbox": "cp overrides/get-base-url.js node_modules/dropbox/src && npm explore dropbox -- npm run build && cp node_modules/dropbox/dist/Dropbox-sdk.min.js public",
     "test": "nyc --reporter=html --reporter=text mocha"
   },
   "engines": {

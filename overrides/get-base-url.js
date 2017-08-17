@@ -4,9 +4,13 @@
 // with the provider at the destination of your choice.
 //
 function getBaseURL(host) {
-  // return 'https://api.cloudstash.net/2/';
-  // return 'http://localhost:1338/2/';
-  return 'https://' + host + '.dropboxapi.com/2/';
+  if (g_dropboxApiEndpoint) {
+    // Return custom Dropbox API endpoint
+    return g_dropboxApiEndpoint
+  } else {
+    // Default Dropbox behavior
+    return 'https://' + host + '.dropboxapi.com/2/';
+  }
 }
 
 module.exports = getBaseURL;
