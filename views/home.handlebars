@@ -22,9 +22,9 @@
   <div class="pull-right">
     <form>
       <div class="input-group" style="width: 400px;">
-        <input type="text" class="form-control" placeholder="Search for...">
+        <input id="search" type="text" class="form-control" placeholder="Search for...">
         <span class="input-group-btn">
-          <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+          <button id="searchButton" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
          </span>
       </div><!-- /input-group -->
     </form>
@@ -54,15 +54,18 @@
       </thead>
       <tbody>
       {{#each entries}}
-        <tr data-path="{{@root.path}}/{{this.name}}" data-name="{{this.name}}" data-isfolder="{{#if this.folder}}true{{else}}false{{/if}}">
+        <tr data-path="{{this.path_display}}" data-name="{{this.name}}" data-isfolder="{{#if this.folder}}true{{else}}false{{/if}}">
           <td></td>
           <td>
           {{#if this.folder}}
              <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
-             <a href='{{@root.path}}/{{this.name}}'>{{this.name}}</a>
+             <a href='/home{{this.path_display}}'>{{this.name}}</a>
           {{else}}
              <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-             <a href='/download?file={{@root.path}}/{{this.name}}'>{{this.name}}</a>
+             <a href='/download?file={{this.path_display}}'>{{this.name}}</a>
+             {{#if this.parent}}
+             <span> in folder </span><a href='/home{{this.parent}}'>{{this.parent}}</a>
+             {{/if}}
           {{/if}}
           </td>
           <td><p>{{this.server_modified}}</p></td>
@@ -72,6 +75,7 @@
       </tbody>
     </table>
   </td>
+  {{#unless search}}
   <td style="padding:20px; vertical-align:top;">
     <div>
       <input id="files" type="file" style="display: none;" multiple>
@@ -83,6 +87,7 @@
       <button id="btnDelete" type="button" class="btn btn-primary btn-sm btn-action" style="display: none;" onclick="onDelete();"><span class="glyphicon glyphicon-trash"></span> Delete</button>
     </div>
   </td>
+  {{/unless}}
 </tr>
 </table>
 

@@ -46,6 +46,21 @@ function onLoad ()
         onMoveCopyOk()
     })
 
+    $('#search').on('keydown', function (event)
+    {
+        if (event.keyCode === 13)
+        {
+            event.preventDefault()
+            onSearch($('#search').val())
+            return false
+        }
+    }) 
+
+    $('#searchButton').click(function (e) 
+    {
+        onSearch($('#search').val())
+    })
+
     $('#files').on('change', uploadFile)
 
     $('#filesTable').show();
@@ -93,6 +108,12 @@ function selectionChanged ()
     }
 }
 
+function onSearch (query)
+{
+    console.log("Search for:", query)
+    window.location.href = '/search?query=' + encodeURIComponent(query)
+}
+
 function onCreateFolder () 
 {
     bootbox.prompt('Create Folder', function (result)
@@ -118,6 +139,8 @@ function onUploadFile ()
     $('#files').click();
 }
 
+// For streaming/multipart upload (from Node.js app), see - https://github.com/AlesMenzel/dropbox-session-test
+//
 function uploadFile ()
 {
     var files = $('#files')[0].files
@@ -125,6 +148,9 @@ function uploadFile ()
 
     notify('Uploading file: ' + files[0].name);
 
+    // filesUpload internally uses a SuperAgent request and does a send() on 'contents', which apparently
+    // works on these browser form file objects.
+    //
     dbx.filesUpload({ path: path + '/' + files[0].name, contents: files[0] }).then(function(response) 
     {
         console.log(response);
