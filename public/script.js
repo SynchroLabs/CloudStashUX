@@ -61,7 +61,10 @@ function onLoad ()
         onSearch($('#search').val())
     })
 
-    $('#files').on('change', uploadFile)
+    $('#files').on('change', function()
+    {
+        uploadFiles($('#files')[0].files)
+    })
 
     $('#filesTable').show();
 
@@ -141,10 +144,9 @@ function onUploadFile ()
 
 // For streaming/multipart upload (from Node.js app), see - https://github.com/AlesMenzel/dropbox-session-test
 //
-function uploadFile ()
+function uploadFiles (files)
 {
-    var files = $('#files')[0].files
-    console.log("Files: %o", files)
+    console.log("Upload files: %o", files)
 
     notify('Uploading file: ' + files[0].name);
 
@@ -491,4 +493,76 @@ function onDelete ()
             }
         }
     })
+}
+
+//
+// Drag / drop support
+//
+
+function drop_handler(ev) 
+{
+    console.log("Drop")
+    ev.preventDefault()
+
+    var files = []
+
+    // If dropped items aren't files, reject them
+    var dt = ev.dataTransfer
+    if (dt.items) 
+    {
+        // Use DataTransferItemList interface to access the file(s)
+        for (var i=0; i < dt.items.length; i++) 
+        {
+            if (dt.items[i].kind == "file")
+            {
+                var f = dt.items[i].getAsFile();
+                console.log("... file[" + i + "].name = " + f.name)
+                files.push(f)
+            }
+        }
+    }
+    else
+    {
+        // Use DataTransfer interface to access the file(s)
+        for (var i=0; i < dt.files.length; i++)
+        {
+            console.log("... file[" + i + "].name = " + dt.files[i].name)
+            files.push(f)
+        }
+    }
+
+    if (files.length)
+    {
+        console.log("Uploading dropped files:", files)
+        uploadFiles(files)
+    }
+}
+
+function dragover_handler(ev)
+{
+    console.log("dragOver")
+
+    // Prevent default select and drag behavior
+    ev.preventDefault()
+}
+
+function dragend_handler(ev)
+{
+    console.log("dragEnd")
+
+    // Remove all of the drag data
+    var dt = ev.dataTransfer
+    if (dt.items)
+    {
+        // Use DataTransferItemList interface to remove the drag data
+        for (var i = 0; i < dt.items.length; i++)
+        {
+            dt.items.remove(i)
+        }
+    }
+    else
+    {
+        // Use DataTransfer interface to remove the drag data
+        ev.dataTransfer.clearData()
+    }
 }
