@@ -383,8 +383,7 @@ function copyFiles (params)
 
 function deleteFile (params, successMessage)
 {
-    dbx.filesDelete({ path: selections[0]._data.path })
-    .then(function(response) 
+    dbx.filesDelete(params).then(function(response) 
     {
         console.log('Entry deleted:', response)
         reloadAndNotify(successMessage)
