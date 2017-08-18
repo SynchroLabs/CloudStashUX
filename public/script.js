@@ -142,7 +142,18 @@ function onUploadFile ()
     $('#files').click();
 }
 
-// For streaming/multipart upload (from Node.js app), see - https://github.com/AlesMenzel/dropbox-session-test
+// File upload
+//
+// The Dropbox JavaScript API uses SuperAgent internally, and SuperAgent in turns uses the XMLHttpReuest (XHR).
+// That internal XHR has progress notification (and cancel) support, but it is not exposed to us here (the
+// Dropbox JavaScript API doesn't even have access to it).  So there does not appear to be a way to get status
+// or to cancel a Dropbox upload via the Dropbox JavaScript API.
+//
+// For files larger than a certain size (8MB is suggested), it is recommended to do a multipart upload via
+// the filesUploadSession APIs.  We can easily determine the file size, and slice it into chunks for upload, 
+// using the HTML5 files APIs.  See: https://www.html5rocks.com/en/tutorials/file/dndfiles/
+//
+// Here is an example multipart upload using the Dropbox JS API: https://github.com/AlesMenzel/dropbox-session-test
 //
 function uploadFiles (files)
 {
@@ -150,9 +161,6 @@ function uploadFiles (files)
 
     notify('Uploading file: ' + files[0].name);
 
-    // filesUpload internally uses a SuperAgent request and does a send() on 'contents', which apparently
-    // works on these browser form file objects.
-    //
     dbx.filesUpload({ path: path + '/' + files[0].name, contents: files[0] }).then(function(response) 
     {
         console.log(response);
@@ -497,6 +505,10 @@ function onDelete ()
 
 //
 // Drag / drop support
+//
+
+// Note: We probably want to prevent drop altogether on search results page, see:
+//       https://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
 //
 
 function drop_handler(ev) 
