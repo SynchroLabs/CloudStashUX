@@ -63,8 +63,8 @@
           {{else}}
              <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
              <a href='/download?file={{this.path_display}}'>{{this.name}}</a>
-             {{#if this.parent}}
-             <span> in folder </span><a href='/home{{this.parent}}'>{{this.parent}}</a>
+             {{#if @root.search}}
+             <span> in folder </span><a href='/home{{this.parent}}'>Home{{this.parent}}</a>
              {{/if}}
           {{/if}}
           </td>

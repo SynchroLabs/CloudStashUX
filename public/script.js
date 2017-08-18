@@ -63,7 +63,16 @@ function onLoad ()
 
     $('#files').on('change', function()
     {
-        uploadFiles($('#files')[0].files)
+        // The form field returns a FileList object, which has the same functionality as an array, 
+        // but is not an array, so we have to convert it to one...
+        //
+        var fileList = $('#files')[0].files
+        var files = []
+        for (var i = 0; i < fileList.length; i++)
+        {
+            files.push(fileList[i])
+        }
+        uploadFiles(files)
     })
 
     $('#filesTable').show();
@@ -142,34 +151,74 @@ function onUploadFile ()
     $('#files').click();
 }
 
-// File upload
+// File(s) upload
 //
 // The Dropbox JavaScript API uses SuperAgent internally, and SuperAgent in turns uses the XMLHttpReuest (XHR).
 // That internal XHR has progress notification (and cancel) support, but it is not exposed to us here (the
 // Dropbox JavaScript API doesn't even have access to it).  So there does not appear to be a way to get status
 // or to cancel a Dropbox upload via the Dropbox JavaScript API.
 //
-// For files larger than a certain size (8MB is suggested), it is recommended to do a multipart upload via
-// the filesUploadSession APIs.  We can easily determine the file size, and slice it into chunks for upload, 
-// using the HTML5 files APIs.  See: https://www.html5rocks.com/en/tutorials/file/dndfiles/
+// That being said, we could report status and support cancel on multipart upload, or a multi-file upload (probably
+// easier and more sensible if we did them serially).
 //
-// Here is an example multipart upload using the Dropbox JS API: https://github.com/AlesMenzel/dropbox-session-test
-//
-function uploadFiles (files)
+const maxBlob = 8 * 1024 * 1024 // 8Mb - Dropbox JavaScript API suggested max file / chunk size
+
+function uploadFile (file)
 {
-    console.log("Upload files: %o", files)
+    notify('Uploading file: ' + file.name);
 
-    notify('Uploading file: ' + files[0].name);
+    if (file.size > maxBlob)
+    {
+        // !!! Multipart upload - use filesUploadSession APIs
+        //
+        // We can slice the file into chunks for upload, using the HTML5 files APIs:
+        // https://www.html5rocks.com/en/tutorials/file/dndfiles/
+        //
+        // Here is an example multipart upload using the Dropbox JS API: 
+        // https://github.com/AlesMenzel/dropbox-session-test
+        //
+    }
+    else
+    {
+        // !!! Straight filesUpload
+    }
 
-    dbx.filesUpload({ path: path + '/' + files[0].name, contents: files[0] }).then(function(response) 
+    // !!! For now we're just going to do fileUpload on all files (should work for size < 150Mb)
+    //
+    dbx.filesUpload({ path: path + '/' + file.name, contents: file }).then(function(response) 
     {
         console.log(response);
-        reloadAndNotify('Completed uploading of file: ' + files[0].name)
+        reloadAndNotify('Completed uploading of file: ' + file.name)
     })
     .catch(function(error) 
     {
         console.error(error);
     });
+}
+
+function uploadFiles (files)
+{
+    console.log("Upload files: %o", files)
+
+    if (files.length === 1)
+    {
+        // Single file upload
+        //
+        uploadFile(files[0])
+    }
+    else
+    {
+        // Multiple file upload 
+        //
+        // We could use this logic for both cases, but the idea is that we'll want some kind of status with
+        // cancel on multi-file uploads.  And we'll probably want to do them serially, or at least with a 
+        // reasonable parallel concurrency.
+        //
+        files.forEach(function(file) 
+        {
+            uploadFile(file)
+        })
+    }
 }
 
 function onRename () 
