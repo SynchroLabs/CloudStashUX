@@ -250,19 +250,68 @@ function onRename ()
     })
 }
 
+function populateFolderPicker()
+{
+    var tree = [
+    {
+        text: "Home",
+        path: "/",
+        nodes: [
+        {
+            text: "Folder 1",
+            path: "/Folder 1"
+        },
+        {
+            text: "Folder 2",
+            path: "/Folder 2",
+            nodes: [
+            {
+                text: "SubFolder 1",
+                path: "/Folder 2/SubFolder 1"
+            },
+            {
+                text: "SubFolder 2",
+                path: "/Folder 2/SubFolder 2"
+            }]
+        },
+        {
+            text: "Folder 3",
+            path: "/Folder 3"
+        },
+        {
+            text: "Folder 4",
+            path: "/Folder 4"
+        }]
+    }]
+
+    var tree = $('#tree').treeview(
+    {
+        data: tree,
+        nodeIcon: "glyphicon glyphicon-folder-close"
+    })
+
+    $('#tree').on('nodeExpanded', function(event, node) 
+    {
+        console.log("Node expanded:", event, node)
+        $('#tree').treeview('addNode', [node, { text: "New Node" }])
+    });
+}
+
 function onMove () 
 {
     jQuery.data($('#moveCopyModal')[0], 'operation', 'move')
-    $('#moveCopyModalDest').val('')
     $('#moveCopyModalTitle').text('Move')
+    $('#moveCopyModalDest').val('')
+    populateFolderPicker()
     $('#moveCopyModal').modal()
 }
 
 function onCopy () 
 {
     jQuery.data($('#moveCopyModal')[0], 'operation', 'copy')
-    $('#moveCopyModalDest').val('')
     $('#moveCopyModalTitle').text('Copy')
+    $('#moveCopyModalDest').val('')
+    populateFolderPicker()
     $('#moveCopyModal').modal()
 }
 
