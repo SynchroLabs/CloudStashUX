@@ -93,10 +93,13 @@
 </table>
 
 <script>
-    var path='{{path}}'
+    var path='{{{path}}}'
+    var cursor='{{{cursor}}}'
 
-    var g_dropboxApiEndpoint = '{{dropboxApiEndpoint}}'
-    var dbx = new Dropbox({ accessToken: '{{token}}' })
+    var g_dropboxApiEndpoint = '{{{dropboxApiEndpoint}}}'
+    var dbx = new Dropbox({ accessToken: '{{{token}}}' })
+
+    console.log('Path: %s, Cursor: %s', path, cursor)
 
     $('#filesTable').bootstrapTable(
     {
