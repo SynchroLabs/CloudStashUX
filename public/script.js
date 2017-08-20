@@ -262,11 +262,22 @@ function populateFolder (parentPath, parentId, depth)
             {
                 console.log("Found folder:", entry.name)
                 var node = $('#tree').treeview('addNode', [parentId, { text: entry.name, path: entry.path_display }])
+                if (node.nodeId === 1)
+                {
+                    // This is kind of a hack, but once we've added the first non-root node (nodeId == 1), we
+                    // need to expand the root node (nodeId == 0).
+                    //
+                    $('#tree').treeview('expandNode', [ 0, { levels: 2, silent: true } ]);
+                }
+
                 if (depth)
                 {
-                    populateFolder(entry.path_display, node.nodeId, depth)
+                    populateFolder(node.path, node.nodeId, depth)
                 }
             }
+
+            var parentNode = $('#tree').treeview('getNode', [parentId]);
+            parentNode.populated = true
         })
     })
     .catch(function(error) 
@@ -297,11 +308,18 @@ function populateFolderPicker ()
 
     tree.on('nodeExpanded', function (event, node)
     {
-        // !!! The idea here is the if we have only populated to a certain depth, then
-        //     when we expand a node, we need to ensure that its grandchildren have been
-        //     populated (so that its children will show expandability appropriately).
+        // The idea here is the if we have only populated to a certain depth, then
+        // when we expand a node, we need to ensure that its children have been
+        // populated (so that its children will show expandability appropriately).
         //
         console.log("Node expanded:", node)
+        node.nodes.forEach(function (childNode)
+        {
+            if (!childNode.populated)
+            {
+                populateFolder(childNode.path, childNode.nodeId, 1)
+            }
+        })
     })
 
     populateFolder('', 0, 2)
