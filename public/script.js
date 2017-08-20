@@ -237,8 +237,7 @@ function onRename ()
         var dst = path + '/' + result
         console.log('Rename ' + src + ' to ' + dst)
 
-        dbx.filesMove({ from_path: src, to_path: dst })
-        .then(function(response) 
+        dbx.filesMove({ from_path: src, to_path: dst }).then(function(response) 
         {
             console.log('Entry renamed:', response)
             reloadAndNotify('Renamed ' + type + ': ' + selections[0]._data.name + ' to ' + result)
@@ -250,38 +249,38 @@ function onRename ()
     })
 }
 
-function populateFolderPicker()
+function populateFolder (parentPath, parentId, depth)
+{
+    depth--
+
+    dbx.filesListFolder({ path: parentPath, recursive: false }).then(function(response) 
+    {
+        console.log('Folder list:', response)
+        response.entries.forEach(function(entry)
+        {
+            if (entry['.tag'] === 'folder')
+            {
+                console.log("Found folder:", entry.name)
+                var node = $('#tree').treeview('addNode', [parentId, { text: entry.name, path: entry.path_display }])
+                if (depth)
+                {
+                    populateFolder(entry.path_display, node.nodeId, depth)
+                }
+            }
+        })
+    })
+    .catch(function(error) 
+    {
+        console.error(error)
+    })
+}
+
+function populateFolderPicker ()
 {
     var tree = [
     {
         text: "Home",
         path: "/",
-        nodes: [
-        {
-            text: "Folder 1",
-            path: "/Folder 1"
-        },
-        {
-            text: "Folder 2",
-            path: "/Folder 2",
-            nodes: [
-            {
-                text: "SubFolder 1",
-                path: "/Folder 2/SubFolder 1"
-            },
-            {
-                text: "SubFolder 2",
-                path: "/Folder 2/SubFolder 2"
-            }]
-        },
-        {
-            text: "Folder 3",
-            path: "/Folder 3"
-        },
-        {
-            text: "Folder 4",
-            path: "/Folder 4"
-        }]
     }]
 
     var tree = $('#tree').treeview(
@@ -290,11 +289,22 @@ function populateFolderPicker()
         nodeIcon: "glyphicon glyphicon-folder-close"
     })
 
-    $('#tree').on('nodeExpanded', function(event, node) 
+    tree.on('nodeSelected', function (event, node)
     {
-        console.log("Node expanded:", event, node)
-        $('#tree').treeview('addNode', [node, { text: "New Node" }])
-    });
+        console.log("Node selected:", node)
+        $('#moveCopyModalDest').val(node.path)
+    })
+
+    tree.on('nodeExpanded', function (event, node)
+    {
+        // !!! The idea here is the if we have only populated to a certain depth, then
+        //     when we expand a node, we need to ensure that its grandchildren have been
+        //     populated (so that its children will show expandability appropriately).
+        //
+        console.log("Node expanded:", node)
+    })
+
+    populateFolder('', 0, 2)
 }
 
 function onMove () 

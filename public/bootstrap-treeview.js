@@ -813,12 +813,13 @@
 		return this.findNodes('false', 'g', 'state.disabled');
 	};
 
-	Tree.prototype.addNode = function (parentNode, node) {
-		parentNode = this.getNode(parentNode.nodeId)
+	Tree.prototype.addNode = function (parentNodeId, node) {
+		var parentNode = this.getNode(parentNodeId)
 		parentNode.nodes = parentNode.nodes || [];
 		parentNode.nodes.push(node)
 		this.setInitialState(parentNode, node);
 		this.render();
+		return node;
 	};
 
 	/**
