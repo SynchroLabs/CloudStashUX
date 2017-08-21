@@ -161,62 +161,141 @@ function onUploadFile ()
 // That being said, we could report status and support cancel on multipart upload, or a multi-file upload (probably
 // easier and more sensible if we did them serially).
 //
-const maxBlob = 8 * 1024 * 1024 // 8Mb - Dropbox JavaScript API suggested max file / chunk size
-
-function uploadFile (file)
-{
-    notify('Uploading file: ' + file.name);
-
-    if (file.size > maxBlob)
-    {
-        // !!! Multipart upload - use filesUploadSession APIs
-        //
-        // We can slice the file into chunks for upload, using the HTML5 files APIs:
-        // https://www.html5rocks.com/en/tutorials/file/dndfiles/
-        //
-        // Here is an example multipart upload using the Dropbox JS API: 
-        // https://github.com/AlesMenzel/dropbox-session-test
-        //
-    }
-    else
-    {
-        // !!! Straight filesUpload
-    }
-
-    // !!! For now we're just going to do fileUpload on all files (should work for size < 150Mb)
-    //
-    dbx.filesUpload({ path: path + '/' + file.name, contents: file }).then(function(response) 
-    {
-        console.log(response);
-        reloadAndNotify('Completed uploading of file: ' + file.name)
-    })
-    .catch(function(error) 
-    {
-        console.error(error);
-    });
-}
+const maxBlob = 8 * 1000 * 1000 // 8Mb - Dropbox JavaScript API suggested max file / chunk size
 
 function uploadFiles (files)
 {
     console.log("Upload files: %o", files)
 
-    if (files.length === 1)
+    var workItems = []
+    var workItemsSize = 0
+
+    files.forEach( function(file)
     {
-        // Single file upload
+        if (file.size < maxBlob)
+        {
+            // Single part upload - use filesUpload API
+            //
+            // { file: file1, chunk: false, size: 6969 }
+            //
+            workItems.push({ file: file, chunk: false, size: file.size })
+            workItemsSize += file.size
+        }
+        else
+        {
+            // Multipart upload - use filesUploadSession APIs
+            //
+            // { file: file2, chunk: true, start: 0, end: 8191, size: 8192 }
+            // { file: file2, chunk: true, start: 8192, end: 9192, close: true, size: 1000 }
+            //
+            var offset = 0
+
+            while (offset < file.size)
+            {
+                var chunkSize = Math.min(maxBlob, file.size - offset)
+                workItems.push({ file: file, chunk: true, offset: offset, end: offset + chunkSize, size: chunkSize })
+                workItemsSize += chunkSize
+                offset += chunkSize
+            }
+
+            workItems[workItems.length-1].close = true
+        }
+    })
+
+    console.log("Workitems:", workItems)
+
+    if (workItems.length === 1)
+    {
+        // Uploading a single file in one chunk
         //
-        uploadFile(files[0])
+        // The only reason we process this separately here is to support the different UX - as there
+        // is no status/cancel with a single file, single part upload.
+        //
+        var file = workItems[0].file
+        notify('Uploading file: ' + file.name);
+        dbx.filesUpload({ path: path + '/' + file.name, contents: file }).then(function(response) 
+        {
+            console.log(response);
+            reloadAndNotify('Completed uploading of file: ' + file.name)
+        })
+        .catch(function(error) 
+        {
+            console.error(error);
+        })
     }
     else
     {
-        // Multiple file upload 
+        // Uploading multiple files and/or chunks
         //
-        // We could use this logic for both cases, but the idea is that we'll want some kind of status with
-        // cancel on multi-file uploads.  And we'll probably want to do them serially, or at least with a 
-        // reasonable parallel concurrency.
+        // You could easily process multiple workItems in parallel if desired.  In our case, we want
+        // to show a nice progress UX with cancel, so we're going to process the workItems serially.
         //
-        files.forEach(function(file) 
+        var sessionId
+        var result = Promise.resolve()
+        workItems.forEach( function (workItem)
         {
-            uploadFile(file)
+            var file = workItem.file
+            result = result.then( function ()
+            {
+                if (!workItem.chunk)
+                {
+                    console.log("Uploading file:", file.name)
+                    return dbx.filesUpload({ path: path + '/' + file.name, contents: file }).then(function(response) 
+                    {
+                        console.log(response);
+                        console.log('Completed uploading of file: ' + file.name)
+                    })
+                }
+                else if (workItem.offset === 0)
+                {
+                    console.log("Starting multipart upload of file:", file.name)
+                    var blob = file.slice(workItem.offset, workItem.end)
+                    return dbx.filesUploadSessionStart({ close: false, contents: blob}).then(function (response)
+                    {
+                        sessionId = response.session_id;
+                        console.log("Complete multipart upload start, sessionId:", sessionId)
+                    })
+                }
+                else if (!workItem.close)
+                {
+                    console.log("Putting chunk in multipart upload of file:", file.name)
+                    var cursor = { session_id: sessionId, offset: workItem.offset }
+                    var blob = file.slice(workItem.offset, workItem.end)
+                    return dbx.filesUploadSessionAppendV2({ cursor: cursor, close: false, contents: blob }).then( function (response)
+                    {
+                        console.log("Complete multipart upload append")
+                    })
+                }
+                else
+                {
+                    console.log("Completing multipart upload of file:", file.name)
+                    var cursor = { session_id: sessionId, offset: workItem.offset }
+                    var commit = { path: path + '/' + file.name, mode: 'add', autorename: true, mute: false }
+                    var blob = file.slice(workItem.offset, workItem.end)
+                    return dbx.filesUploadSessionFinish({ cursor: cursor, commit: commit, contents: blob }).then(function (response)
+                    {
+                        console.log("Complete multipart upload finish")
+                        sessionId = null
+                    })
+                }
+            })
+        })
+
+        result.then( function()
+        {
+            console.log("Complete upload of workitem(s)")
+            if (files.length === 1)
+            {
+                reloadAndNotify('Completed uploading of file: ' + files[0].name)
+            }
+            else
+            {
+                reloadAndNotify('Completed uploading of multiple files')
+            }
+        })
+        .catch( function(reason) 
+        { 
+            console.log("ERR:", reason ) 
         })
     }
 }
