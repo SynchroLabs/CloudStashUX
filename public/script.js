@@ -21,10 +21,10 @@ function notify(message, customOpts)
         Object.assign(opts, customOpts)
     }
 
-    $.notify(message, opts)
+    return $.notify(message, opts)
 }
 
-function reloadAndNotify(message)
+function reloadAndNotify (message)
 {
     Cookies.set('notification', message)
     window.location.reload(true)
@@ -230,7 +230,11 @@ function uploadFiles (files)
         // You could easily process multiple workItems in parallel if desired.  In our case, we want
         // to show a nice progress UX with cancel, so we're going to process the workItems serially.
         //
+        var msg = (files.length === 1) ? 'Uploading file: ' + files[0].name : 'Uploading files'
+        var notification = notify(msg, { showProgressbar: true, delay: 0 });
+
         var sessionId
+        var bytesUploaded = 0
         var result = Promise.resolve()
         workItems.forEach( function (workItem)
         {
@@ -244,6 +248,8 @@ function uploadFiles (files)
                     {
                         console.log(response);
                         console.log('Completed uploading of file: ' + file.name)
+                        bytesUploaded += workItem.size
+                        notification.update('progress', bytesUploaded/workItemsSize * 100)
                     })
                 }
                 else if (workItem.offset === 0)
@@ -254,6 +260,8 @@ function uploadFiles (files)
                     {
                         sessionId = response.session_id;
                         console.log("Complete multipart upload start, sessionId:", sessionId)
+                        bytesUploaded += workItem.size
+                        notification.update('progress', bytesUploaded/workItemsSize * 100)
                     })
                 }
                 else if (!workItem.close)
@@ -264,6 +272,8 @@ function uploadFiles (files)
                     return dbx.filesUploadSessionAppendV2({ cursor: cursor, close: false, contents: blob }).then( function (response)
                     {
                         console.log("Complete multipart upload append")
+                        bytesUploaded += workItem.size
+                        notification.update('progress', bytesUploaded/workItemsSize * 100)
                     })
                 }
                 else
@@ -276,6 +286,8 @@ function uploadFiles (files)
                     {
                         console.log("Complete multipart upload finish")
                         sessionId = null
+                        bytesUploaded += workItem.size
+                        notification.update('progress', bytesUploaded/workItemsSize * 100)
                     })
                 }
             })
