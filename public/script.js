@@ -111,7 +111,7 @@ function onLoad ()
     //
     selectionChanged()
 
-    pollForChanges()
+    // pollForChanges()
 }
 
 function selectionChanged () 
@@ -181,6 +181,13 @@ function onCreateFolder ()
 function onUploadFile ()
 {
     $('#files').click();
+}
+
+var cancelUpload = false
+function onCancelUpload ()
+{
+    console.log("Upload cancelled")
+    cancelUpload = true
 }
 
 // File(s) upload
@@ -263,7 +270,23 @@ function uploadFiles (files)
         // to show a nice progress UX with cancel, so we're going to process the workItems serially.
         //
         var msg = (files.length === 1) ? 'Uploading file: ' + files[0].name : 'Uploading files'
-        var notification = notify(msg, { showProgressbar: true, delay: 0 });
+        var notification = notify(msg, 
+        { 
+            showProgressbar: true, 
+            delay: 0,
+            template: // Added "cancel" button to default template
+                '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                '    <button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+                '    <span data-notify="icon"></span>' +
+                '    <span data-notify="title">{1}</span>' +
+                '    <span data-notify="message">{2}</span>' +
+                '    <div class="progress" data-notify="progressbar">' +
+                '        <div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '    </div>' +
+                '    <button id="btnCancel" type="button" class="btn btn-primary btn-sm btn-action" onclick="onCancelUpload();"><span class="glyphicon glyphicon-stop"></span> Cancel</button>' +
+                '    <a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+        });
 
         var sessionId
         var bytesUploaded = 0
@@ -273,6 +296,11 @@ function uploadFiles (files)
             var file = workItem.file
             result = result.then( function ()
             {
+                if (cancelUpload)
+                {
+                    return(Promise.resolve())
+                }
+
                 if (!workItem.chunk)
                 {
                     console.log("Uploading file:", file.name)
@@ -327,14 +355,24 @@ function uploadFiles (files)
 
         result.then( function()
         {
-            console.log("Complete upload of workitem(s)")
-            if (files.length === 1)
+            if (cancelUpload)
             {
-                reloadAndNotify('Completed uploading of file: ' + files[0].name)
+                console.log("Upload of workitem(s) cancelled")
+                notification.close()
+                notify("Upload cancelled")
+                cancelUpload = false
             }
             else
             {
-                reloadAndNotify('Completed uploading of multiple files')
+                console.log("Complete upload of workitem(s)")
+                if (files.length === 1)
+                {
+                    reloadAndNotify('Completed uploading of file: ' + files[0].name)
+                }
+                else
+                {
+                    reloadAndNotify('Completed uploading of multiple files')
+                }
             }
         })
         .catch( function(reason) 
