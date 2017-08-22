@@ -32,25 +32,18 @@ function reloadAndNotify (message)
 
 function pollForChanges()
 {
-    // !!! pollForChanges - Not implemented
+    // !!! This API doesn't work on the Dropbox backend (was never tested and has been b0rken for 9+ months).
+    //     See: https://github.com/dropbox/dropbox-sdk-js/issues/85
     //
-    // The Dropbox JavaScript SDK doesn't send the auth token (because Dropbox doesn't require it - this
-    // is the only REST API entrypoint that doesn't require auth - on the argument that it relies on a 
-    // cursor from a previously authenticated call and that it doesn't return anything important).  The
-    // problem is that CloudStash relies on the auth token to map the user.  I guess we could build the user
-    // id into the CloudStash cursor to address this, but that's seems kind of ugly.
-    //
-    // Also, this API doesn't work on the Dropbox backend (was never tested and has been b0rken for 9+ months).
-    // See: https://github.com/dropbox/dropbox-sdk-js/issues/85
-    //
-    // So for those reasons, screw this.  We'll come back to it.
-    //
+    console.log("Polling for changes")
     dbx.filesListFolderLongpoll({ cursor: cursor, timeout: 30 }).then( function(response)
     {
         if (response.changes)
         {
-            notify("New files showed up")
-            // !!! need to list files, update cursor
+            reloadAndNotify("Folder contents changed, reloaded")
+        }
+        else
+        {
             pollForChanges()
         }
     })
@@ -111,7 +104,7 @@ function onLoad ()
     //
     selectionChanged()
 
-    // pollForChanges()
+    pollForChanges()
 }
 
 function selectionChanged () 
