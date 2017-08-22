@@ -1,5 +1,5 @@
 {
-  "name": "cloudstashux",
+  "name": "cloudstashweb",
   "version": "0.0.1",
   "description": "Node.js web-based UX for Dropbox or compatible file storage solutions",
   "homepage": "http://synchro.io/",
@@ -11,10 +11,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/SynchroLabs/CloudStashUX"
+    "url": "https://github.com/SynchroLabs/CloudStashWeb"
   },
   "bugs": {
-    "url": "https://github.com/SynchroLabs/CloudStashUX/issues"
+    "url": "https://github.com/SynchroLabs/CloudStashWeb/issues"
   },
   "license": "UNLICENSED",
   "private": true,

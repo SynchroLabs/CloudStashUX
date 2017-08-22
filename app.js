@@ -1,5 +1,5 @@
-var cloudStashUxServer = require('./lib/server');
-var cloudStashUxConfig = require('./lib/config');
+var cloudStashWebServer = require('./lib/server');
+var cloudStashWebConfig = require('./lib/config');
 var pkg = require('./package.json');
 
 // Process command line params
@@ -17,28 +17,28 @@ if (commander.port)
     overrides.PORT = commander.port;
 }
 
-var config = cloudStashUxConfig.getConfig(commander.config, overrides);
+var config = cloudStashWebConfig.getConfig(commander.config, overrides);
 
 var loggerModule = require('./lib/logger');
 loggerModule.createMainLogger(config);
 
 var log = loggerModule.getLogger("app");
 
-log.info("CloudStashUX server v%s loading - %s", pkg.version, config.configDetails);
+log.info("CloudStashWeb server v%s loading - %s", pkg.version, config.configDetails);
 
 global.g_dropboxApiEndpoint = config.get('DROPBOX_API_ENDPOINT')
 
-var server = cloudStashUxServer(config);
+var server = cloudStashWebServer(config);
 
 server.listen(config.get('PORT'), function (err) 
 {
     if (err)
     {
-        log.error("CloudStashUX server failed in listen()", err);
+        log.error("CloudStashWeb server failed in listen()", err);
     }
     else
     {
-        log.info('CloudStashUX listening on port:', this.address().port);
+        log.info('CloudStashWeb listening on port:', this.address().port);
     }
 });
 
@@ -50,7 +50,7 @@ server.on('error', function(err)
     }
     else
     {
-        log.error("CloudStashUX server error:", err);
+        log.error("CloudStashWeb server error:", err);
     }
 });
 
