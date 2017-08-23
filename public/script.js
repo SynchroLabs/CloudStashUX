@@ -190,8 +190,8 @@ function onCancelUpload ()
 // Dropbox JavaScript API doesn't even have access to it).  So there does not appear to be a way to get status
 // or to cancel a Dropbox upload via the Dropbox JavaScript API.
 //
-// That being said, we could report status and support cancel on multipart upload, or a multi-file upload (probably
-// easier and more sensible if we did them serially).
+// That being said, we can report status and support cancel on multipart upload, or a multi-file upload (which
+// is easier and more sensible when we do them serially, as below).
 //
 const maxBlob = 8 * 1000 * 1000 // 8Mb - Dropbox JavaScript API suggested max file / chunk size
 
