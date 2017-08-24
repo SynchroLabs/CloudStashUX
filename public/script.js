@@ -38,13 +38,20 @@ function pollForChanges()
     console.log("Polling for changes")
     dbx.filesListFolderLongpoll({ cursor: cursor, timeout: 30 }).then( function(response)
     {
-        if (response.changes)
+        if (!inOperation)
         {
-            reloadAndNotify("Folder contents changed, reloaded")
+            if (response.changes)
+            {
+                reloadAndNotify("Folder contents changed, reloaded")
+            }
+            else
+            {
+                pollForChanges()
+            }
         }
         else
         {
-            pollForChanges()
+            console.log("In operation, terminating polling")
         }
     })
     .catch(function(error) 
@@ -151,6 +158,8 @@ function onSearch (query)
     window.location.href = '/search?query=' + encodeURIComponent(query)
 }
 
+var inOperation
+
 function onCreateFolder () 
 {
     bootbox.prompt('Create Folder', function (result)
@@ -158,6 +167,7 @@ function onCreateFolder ()
         if (result)
         {
             notify('Creating folder: ' + result )
+            inOperation = true
             dbx.filesCreateFolder({ path: path + '/' + result }).then(function (response)
             {
                 console.log('Created folder:', response)
@@ -198,6 +208,8 @@ const maxBlob = 8 * 1000 * 1000 // 8Mb - Dropbox JavaScript API suggested max fi
 function uploadFiles (files)
 {
     console.log("Upload files: %o", files)
+
+    inOperation = true
 
     var workItems = []
     var workItemsSize = 0
@@ -371,12 +383,16 @@ function uploadFiles (files)
         .catch( function(reason) 
         { 
             console.log("ERR:", reason ) 
+            notification.close()
+            notify("Error on upload: " + reason.user_message);
         })
     }
 }
 
 function onRename () 
 {
+    inOperation = true
+
     var selections = $('#filesTable').bootstrapTable('getSelections')
     var type = 'file'
     if (selections[0]._data.isfolder) 
@@ -499,6 +515,7 @@ function onCopy ()
 
 function moveFile (params, successMessage)
 {
+    inOperation = true
     dbx.filesMove(params)
     .then(function(response) 
     {
@@ -514,6 +531,7 @@ function moveFile (params, successMessage)
 function moveFiles (params)
 {
     console.log('Moving entries:', params.entries)
+    inOperation = true
 
     dbx.filesMoveBatch(params).then(function (response) 
     {
@@ -556,6 +574,7 @@ function moveFiles (params)
 
 function copyFile (params, successMessage)
 {
+    inOperation = true
     dbx.filesCopy(params)
     .then(function(response) 
     {
@@ -572,6 +591,7 @@ function copyFile (params, successMessage)
 function copyFiles (params)
 {
     console.log('Copying entries:', params.entries)
+    inOperation = true
 
     dbx.filesCopyBatch(params).then(function (response) 
     {
@@ -614,6 +634,7 @@ function copyFiles (params)
 
 function deleteFile (params, successMessage)
 {
+    inOperation = true
     dbx.filesDelete(params).then(function(response) 
     {
         console.log('Entry deleted:', response)
@@ -628,6 +649,7 @@ function deleteFile (params, successMessage)
 function deleteFiles (params)
 {
     console.log('Delete entries:', params.entries)
+    inOperation = true
 
     dbx.filesDeleteBatch(params).then(function (response) 
     {
